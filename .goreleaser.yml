@@ -1,0 +1,58 @@
+project_name: hercules
+before:
+  hooks:
+    - go mod download
+release:
+  prerelease: false
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com//hercules/cmd.version={{.Version}} -X github.com//cmd.commit={{.Commit}} -X github.com//cmd.date={{.Date}}
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      bit: Arm
+      bitv6: Arm6
+      bitv7: Arm7
+      amd64: x86_64
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+# Homebrew
+brews:
+  - name: hercules
+    tap:
+      owner: DanielPickens
+      name: DanielPickens-homebrew-tap
+    commit_author:
+      name: DanielPickens
+      email: DanielPickens@email.com
+    folder: Formula
+    homepage: https:///githuh.com/DanielPickens/hercules
+    description: A Kubernetes Cluster sanitizer and linter.
+    test: |
+      system "hercules version"

@@ -1,0 +1,21 @@
+language: go
+go_import_path: github.com/danielpickens/hercules
+go:
+  - "1.19"
+  # - master
+
+os:
+  - linux
+  - osx
+
+dist: trusty
+sudo: false
+
+install: true
+
+env:
+  - GO111MODULE=on
+
+script:
+  - go build
+  - go test ./...
