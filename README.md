@@ -9,11 +9,6 @@ Hercules is a readonly tool, it does not alter any of your Kubernetes resources 
 
 ## Installation
 
-Hercules is available on Linux, OSX and Windows platforms.
-
-* Binaries for Linux, Windows and Mac are available as tarballs in
-  the [release](https://github.com/x/hercules/releases) page.
-
 * For OSX/Unit using Homebrew/LinuxBrew
 
    ```shell
