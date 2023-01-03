@@ -181,7 +181,7 @@ your local kube config directory into the container with `-v` :
 ```shell
   docker run --rm -it \
     -v $HOME/.kube:/root/.kube \
-    unknown/hercules --context foo -n bar
+    DanielPickens/hercules --context foo -n bar
 ```
 
 Running the above docker command with `--rm` means that the container gets
@@ -195,7 +195,7 @@ NOTE: You can override the default output directory location by setting `HERCULE
     -v $HOME/.kube:/root/.kube \
     -e NESSY_REPORT_DIR=/tmp/hercules \
     -v /tmp:/tmp \
-    unknown/hercules --context foo -n bar --save --output-file my_report.txt
+    DanielPickens/hercules --context foo -n bar --save --output-file my_report.txt
 
   # Docker has exited, and the container has been deleted, but the file
   # is in your /tmp directory because it's mapped into the container
@@ -352,7 +352,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: hercules
-              image: unknown/hercules
+              image: DanielPickens/hercules
               imagePullPolicy: IfNotPresent
               args:
                 - -o
@@ -473,4 +473,3 @@ enjoy this effort, please let me know that too!
 1. **Email**: danielpickens@gmail.com  
 
 ---
-
