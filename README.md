@@ -12,7 +12,7 @@ Hercules is a readonly tool, it does not alter any of your Kubernetes resources 
 * For OSX/Unit using Homebrew/LinuxBrew
 
    ```shell
-   brew install x/hercules/hercules
+   brew install DanielPickens/hercules/hercules
    ```
 
 * Building from source
