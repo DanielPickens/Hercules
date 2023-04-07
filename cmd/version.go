@@ -36,12 +36,12 @@ func printTuple(section, value string) {
 
 func printLogo(title, logo report.Color) {
 	for i, s := range report.Logo {
-		if i < len(report.Nessy) {
-			fmt.Printf("%s", report.Colorize(report.Nessy[i], title))
+		if i < len(report.Hercules) {
+			fmt.Printf("%s", report.Colorize(report.Hercules[i], title))
 			fmt.Printf("%s", strings.Repeat(" ", 22))
 		} else {
 			if i == 4 {
-				fmt.Printf("%s", report.Colorize("  xxx!", logo))
+				fmt.Printf("%s", report.Colorize("  Hercules!", logo))
 				fmt.Printf("%s", strings.Repeat(" ", 26))
 			} else {
 				fmt.Printf("%s", strings.Repeat(" ", 50))
