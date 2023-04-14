@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Build...
-FROM golang:1.20 -alpine3.14 AS build
+FROM golang:1.20-buster
 
 WORKDIR /hercules
 
