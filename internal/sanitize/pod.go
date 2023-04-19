@@ -11,6 +11,11 @@ import (
 	polv1beta1 "k8s.io/api/policy/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	mv1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	"sort"
+	"strings"
+
+	"github.com/rs/zerolog/log"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 const (
@@ -73,6 +78,7 @@ func NewPod(co *issues.Collector, lister PodMXLister) *Pod {
 // Sanitize cleanse the resource..
 func (p *Pod) Sanitize(ctx context.Context) error {
 	mx := p.ListPodsMetrics()
+	pdbs := p.ListPodDisruptionBudgets()
 	for fqn, po := range p.ListPods() {
 		p.InitOutcome(fqn)
 		ctx = internal.WithFQN(ctx, fqn)
@@ -86,6 +92,7 @@ func (p *Pod) Sanitize(ctx context.Context) error {
 		if !ownedByDaemonSet(po) {
 			p.checkPdb(ctx, po.ObjectMeta.Labels)
 		}
+		p.checkForMultiplePdbMatches(ctx, po.Namespace, po.ObjectMeta.Labels, pdbs)
 		p.checkSecure(ctx, fqn, po.Spec)
 		pmx, cmx := mx[fqn], client.ContainerMetrics{}
 		containerMetrics(pmx, cmx)
@@ -256,6 +263,28 @@ func (p *Pod) checkStatus(ctx context.Context, po *v1.Pod) {
 	case v1.PodSucceeded:
 	default:
 		p.AddCode(ctx, 207, po.Status.Phase)
+	}
+}
+
+func (p *Pod) checkForMultiplePdbMatches(ctx context.Context, podNamespace string, podLabels map[string]string, pdbs map[string]*polv1beta1.PodDisruptionBudget) {
+	var matchedPdbs []string
+	for _, pdb := range pdbs {
+		if podNamespace != pdb.Namespace {
+			continue
+		}
+		selector, err := metav1.LabelSelectorAsSelector(pdb.Spec.Selector)
+		if err != nil {
+			log.Error().Err(err).Msg("No selectors found")
+			return
+		}
+		if selector.Empty() || !selector.Matches(labels.Set(podLabels)) {
+			continue
+		}
+		matchedPdbs = append(matchedPdbs, pdb.Name)
+	}
+	if len(matchedPdbs) > 1 {
+		sort.Strings(matchedPdbs)
+		p.AddCode(ctx, 209, strings.Join(matchedPdbs, ", "))
 	}
 }
 
